@@ -1,0 +1,53 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+.env
+.env.*
+!.env.example
+
+# Test and analysis cache
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.hypothesis/
+.tox/
+.nox/
+.ipynb_checkpoints/
+.coverage
+coverage.xml
+htmlcov/
+
+# Build output
+build/
+dist/
+*.egg-info/
+
+# Logs and temporary files
+*.log
+*.tmp
+*.temp
+
+# Editors
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Operating system files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Generated maps and previews
+*.floor-map.json
+*.graph-preview.png
+floor_map.json
+graph_preview.png
+output/
+outputs/
