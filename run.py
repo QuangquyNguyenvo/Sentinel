@@ -10,8 +10,8 @@ python run.py path/to/floorplan.png --show-graph  # display every routing link
 By default, outputs are written beside the selected image as
 ``<stem>.floor-map.json`` and ``<stem>.graph-preview.png``. Use ``--output-dir``
 to redirect defaults, or ``--json-output`` and ``-o``/``--output`` for explicit
-paths. The JSON includes semantic layers, navmesh, space_graph, routing_graph
-and route. With no endpoints, routing starts at the first door (or floor
+paths. The JSON includes semantic layers, navmesh, space_graph, routing_graph,
+graph_validation and route. With no endpoints, routing starts at the first door (or floor
 region) and chooses the cheapest reachable exit. CLI coordinates refer to
 pixel corners.
 """
@@ -181,6 +181,15 @@ def main(argv: Sequence[str] | None = None) -> int:
     save_preview(preview_output, preview)
     print(f"Input: {image_path}")
     print(f"NavMesh: {len(mesh['regions'])} regions, {len(mesh['edges'])} portals")
+    validation = model["graph_validation"]
+    summary = validation["summary"]
+    print(
+        "Graph validation: "
+        f"{validation['status']} | "
+        f"{summary['connected_component_count']} component(s), "
+        f"{summary['reachable_exit_count']} reachable exit(s), "
+        f"{summary['isolated_region_count']} isolated region(s)"
+    )
     route = model["route"]
     print(f"Route: {route['status']}" + (f"; length {route['length_px']:.2f}px" if route['status'] == 'ok' else ''))
     print(f"JSON: {json_output}")

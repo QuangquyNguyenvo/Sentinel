@@ -26,6 +26,7 @@ htmlcov/
 # Build output
 build/
 dist/
+node_modules/
 *.egg-info/
 
 # Logs and temporary files

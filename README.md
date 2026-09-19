@@ -48,3 +48,42 @@ python run.py floor-plan.png --output-dir output
 ```bash
 python -B -m unittest discover -s tests -v
 ```
+
+## 3D Viewer
+
+Run the interactive Three.js prototype:
+
+```bash
+cd viewer
+npm install
+npm run dev
+```
+
+The viewer loads the included sample or a generated `floor-map.json` file. Pick a start point and an exit to calculate a new route in the browser.
+
+## Graph validation
+
+Every generated JSON file includes a `graph_validation` report. It is computed
+after the semantic map, navmesh, space graph, and routing graph have been
+assembled, and is also shown in the 3D viewer's **Graph health** card.
+
+The validator checks that:
+
+- floor regions can reach an exit through the navmesh;
+- each source door connects exactly two known floor zones;
+- exits touch a walkable region;
+- navmesh regions and routing nodes are not isolated unexpectedly;
+- portals and routing edges contain no duplicates or self-loops;
+- portals have positive width;
+- region bounds do not overlap, and every walkable semantic pixel is covered
+  exactly once;
+- every walkable navmesh region participates in the routing graph.
+
+The report contains five summary metrics: `region_count`, `portal_count`,
+`connected_component_count`, `reachable_exit_count`, and
+`isolated_region_count`. `status` is `valid` when no issue is present,
+`warning` when the graph is structurally valid but has reachability/topology
+anomalies, and `error` when a structural invariant is broken. Each issue has
+a stable machine-readable `code`, a `severity`, a message, and relevant
+object/region/node ids or counts. Older JSON files without this report remain
+loadable; the viewer labels their graph health as unavailable.
