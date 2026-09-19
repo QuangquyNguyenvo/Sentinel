@@ -25,6 +25,7 @@
           </div>
           <div id="simulation-toolbar" class="pill-actions simulation-toolbar" aria-label="Simulation actions">
             <button id="toolbar-person" class="icon-button" type="button" draggable="true" aria-label="Drag person to place on map"><i data-lucide="person-standing" aria-hidden="true"></i><span>Person</span></button>
+            <button id="toolbar-fire" class="icon-button" type="button" aria-pressed="false" aria-label="Place fire"><i data-lucide="flame" aria-hidden="true"></i><span>Fire</span></button>
             <button id="populate-rooms" class="icon-button" type="button" aria-label="Populate rooms"><i data-lucide="building-2" aria-hidden="true"></i><span>Rooms</span></button>
             <button id="toolbar-play" class="icon-button play-button" type="button" aria-label="Play simulation"><i class="play-icon" data-lucide="play" aria-hidden="true"></i><i class="pause-icon" data-lucide="pause" aria-hidden="true"></i><span>Play</span></button>
             <button id="toolbar-reset" class="icon-button" type="button" aria-label="Reset simulation"><i data-lucide="rotate-ccw" aria-hidden="true"></i><span>Reset</span></button>
@@ -32,7 +33,7 @@
           </div>
         </div>
 
-        <aside id="inspect-panel" class="side-drawer inspect-panel is-closed" role="tabpanel" aria-labelledby="mode-inspect">
+        <aside id="inspect-panel" class="side-drawer inspect-panel is-closed" role="tabpanel" aria-labelledby="mode-inspect" aria-hidden="true">
           <div class="drawer-header"><div><span class="drawer-kicker">MAP</span><h1 id="map-title">Loading sample...</h1></div><button id="inspect-drawer-close" class="drawer-close" type="button" aria-label="Close map details"><i data-lucide="x" aria-hidden="true"></i></button></div>
           <label class="file-button" for="json-file"><i data-lucide="upload" aria-hidden="true"></i><span>Open JSON</span></label>
           <input id="json-file" type="file" accept="application/json,.json" />
@@ -42,19 +43,21 @@
           <ul class="legend" aria-label="Map legend"><li><span class="swatch floor"></span>Floor</li><li><span class="swatch wall"></span>Wall</li><li><span class="swatch door"></span>Door</li><li><span class="swatch exit"></span>Exit</li><li><span class="swatch obstacle"></span>Obstacle</li><li><span class="swatch route"></span>Route</li></ul>
         </aside>
 
-        <aside id="simulate-panel" class="sim-drawer" role="tabpanel" aria-labelledby="mode-simulate" hidden>
+        <aside id="simulate-panel" class="sim-drawer is-closed" role="tabpanel" aria-labelledby="mode-simulate" aria-hidden="true" hidden>
           <div class="drawer-header"><div><span class="drawer-kicker">SIMULATE</span><h2>Options</h2></div><button id="simulation-more-close" class="drawer-close" type="button" aria-label="Close simulation options"><i data-lucide="x" aria-hidden="true"></i></button></div>
           <label class="select-label" for="crowd-per-room">People per room</label><select id="crowd-per-room"><option value="1">1</option><option value="3" selected>3</option><option value="5">5</option></select>
           <div class="range-field"><div class="range-label"><label for="person-size">Person size</label><output id="person-size-output" for="person-size">1.0×</output></div><input id="person-size" type="range" min="0.6" max="1.8" step="0.1" value="1" aria-describedby="person-size-help"><span id="person-size-help" class="range-help">Marker scale</span></div>
-          <div class="speed-row"><span class="select-label">Speed</span><div class="segmented" role="group" aria-label="Playback speed"><button type="button" data-speed="0.5">0.5×</button><button type="button" data-speed="1" class="is-selected">1×</button><button type="button" data-speed="2">2×</button></div></div>
+          <label class="debug-toggle" for="show-simulation-routes"><input id="show-simulation-routes" type="checkbox"><span>Debug routes</span><small>Show route lines</small></label>
+          <div class="speed-row"><span class="select-label">Speed</span><div class="segmented" role="group" aria-label="Playback speed"><button type="button" data-speed="0.5">0.5×</button><button type="button" data-speed="1" class="is-selected">1×</button><button type="button" data-speed="2">2×</button><button type="button" data-speed="4">4×</button><button type="button" data-speed="8">8×</button><button type="button" data-speed="16">16×</button></div></div>
           <div class="sim-readout"><span id="simulation-state" class="status-pill neutral">Ready</span><span id="simulation-elapsed">00:00.0</span></div>
-          <dl class="simulation-metrics"><div><dt>Total</dt><dd id="sim-total">0</dd></div><div><dt>Moving</dt><dd id="sim-moving">0</dd></div><div><dt>Out</dt><dd id="sim-evacuated">0</dd></div><div><dt>No route</dt><dd id="sim-no-route">0</dd></div></dl>
-          <p class="sim-note">Graph-only preview · no hazards or collision avoidance.</p>
+          <dl class="simulation-metrics"><div><dt>Total</dt><dd id="sim-total">0</dd></div><div><dt>Moving</dt><dd id="sim-moving">0</dd></div><div><dt>Out</dt><dd id="sim-evacuated">0</dd></div><div><dt>No route</dt><dd id="sim-no-route">0</dd></div><div><dt>Collapsed</dt><dd id="sim-trapped">0</dd></div></dl>
+          <section class="fire-panel" aria-labelledby="fire-title"><div class="section-heading"><span class="section-kicker">Hazard</span><h2 id="fire-title">Fire &amp; smoke</h2></div><label class="select-label" for="fire-initial">Fire size when found</label><select id="fire-initial"><option value="250">250 kW</option><option value="500" selected>500 kW</option><option value="1000">1,000 kW</option></select><label class="select-label" for="fire-growth">Fire growth (t²)</label><select id="fire-growth"><option value="slow">Slow · α 0.00293</option><option value="medium" selected>Medium · α 0.0117</option><option value="fast">Fast · α 0.0469</option><option value="ultrafast">Ultra-fast · α 0.1876</option></select><p id="fire-readout" class="fire-readout" aria-live="polite">No fire placed.</p><button id="clear-fire" class="secondary-button" type="button">Remove fire</button></section>
+          <p class="sim-note">Simplified open-door scenario: t² fire growth uses 1,055 kW as a reference point, not a universal flashover threshold. Smoke reduces visibility and movement speed; thermal exposure may incapacitate people. Animated door positions affect pedestrian motion but are not coupled to hazard propagation; toxic gas effects are not calculated. Maps without scale use 5 cm/px. Use real-world dimensions and independent validation for safety decisions. Fire and smoke sprites: Kenney (CC0).</p>
         </aside>
 
         <div class="viewport-header"><span class="viewport-kicker">SCENE</span><span id="viewport-map-name">Loading map</span><span id="placement-hint" class="placement-hint" hidden>Place person</span></div>
         <div class="drop-hint" aria-hidden="true"><span class="drop-hint-icon"><i data-lucide="person-standing"></i></span><span id="drop-hint-label">Drop person on floor</span></div>
-        <div class="sim-hud"><div class="hud-state" aria-live="polite"><span class="hud-dot" aria-hidden="true"></span><span id="hud-state-label">Ready</span></div><div class="hud-metrics"><span><strong id="hud-total">0</strong><small>Total</small></span><span><strong id="hud-moving">0</strong><small>Moving</small></span><span><strong id="hud-evacuated">0</strong><small>Out</small></span><span><strong id="hud-no-route">0</strong><small>No route</small></span></div><span id="hud-time">00:00.0</span></div>
+        <div class="sim-hud"><div class="hud-state" aria-live="polite"><span class="hud-dot" aria-hidden="true"></span><span id="hud-state-label">Ready</span></div><div class="hud-metrics"><span><strong id="hud-total">0</strong><small>Total</small></span><span><strong id="hud-moving">0</strong><small>Moving</small></span><span><strong id="hud-evacuated">0</strong><small>Out</small></span><span><strong id="hud-no-route">0</strong><small>No route</small></span><span class="hud-trapped"><strong id="hud-trapped">0</strong><small>Collapsed</small></span></div><span id="hud-time">00:00.0</span></div>
         <p id="status" class="status" role="status" aria-live="polite">Preparing the viewer...</p>
         <div class="help">Drag · Scroll · Right drag</div>
       </section>

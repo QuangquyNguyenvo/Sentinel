@@ -6,9 +6,11 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "node --test"
   },
   "dependencies": {
+    "gsap": "^3.15.0",
     "lucide": "^1.47.0",
     "three": "^0.185.0"
   },

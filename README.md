@@ -56,10 +56,25 @@ Run the interactive Three.js prototype:
 ```bash
 cd viewer
 npm install
+npm test
+npm run build
 npm run dev
 ```
 
 The viewer loads the included sample or a generated `floor-map.json` file. Pick a start point and an exit to calculate a new route in the browser.
+
+## Fire, smoke, and evacuation simulation
+
+The viewer's hazard mode is a visualization and route-ranking aid. Its assumptions and limits are:
+
+- There is no fixed universal flashover threshold. The fixed 1,055 kW value is a fire-growth reference only, not a flashover prediction.
+- Each semantic cell has uniform fuel and a finite burn duration. Spread is accelerated for visualization, so ignition, smoke-arrival, and burn-out times remain heuristic.
+- Fire propagation follows semantic pixel topology with a simplified radiant line-of-sight check; it does not simulate full heat transfer, compartment fire dynamics, or fluid flow.
+- The default scenario keeps doors open for hazard propagation. Animated door positions affect pedestrian motion but are not coupled to hazard propagation.
+- Smoke is represented as a breathing-height layer with a configurable clearance heuristic. This is not a ventilation or tenability simulation; smoke reduces visibility and movement speed in the viewer.
+- Routes can include hazard weights and blocked regions, but they are graph routes and provide no safe-route guarantee.
+- Thermal exposure can incapacitate a person in the model. Optical smoke affects visibility and movement speed only; toxic gases are not modeled, and a collapsed state is not a death prediction.
+- Maps without a real-world scale use 5 cm/px. Use a calibrated scale and obtain independent fire, smoke, and evacuation validation before using the viewer for safety decisions.
 
 ## Graph validation
 
